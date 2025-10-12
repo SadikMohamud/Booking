@@ -6,31 +6,32 @@
 <title>Book Appointment - South Fade</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Inter,Arial,sans-serif;background:#000;color:#fff;padding:20px;min-height:100vh}
-  .container{max-width:900px;margin:0 auto;background:#111;border:1px solid #333;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.6)}
-  .header{background:#000;color:#ffd700;padding:28px;text-align:center;border-bottom:2px solid #ffd700}
-  .header h1{margin-bottom:6px;font-size:1.8rem}
-  .content{padding:28px}
-  label{display:block;margin-bottom:6px;color:#ffd700;font-weight:600}
-  input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:1rem;margin-bottom:14px}
-  .flex{display:flex;gap:12px}
-  .col{flex:1}
-  .time-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:8px}
-  .slot{padding:10px;border-radius:8px;background:#222;border:1px solid #444;text-align:center;cursor:pointer;user-select:none}
-  .slot:hover:not(.disabled){background:#2a2a2a;border-color:#ffd700;transform:translateY(-2px)}
-  .slot.selected{background:#ffd700;color:#000;border-color:#ffd700;font-weight:700}
-  .slot.disabled{background:#1a1a1a;color:#666;opacity:.6;cursor:not-allowed;text-decoration:line-through}
-  .btn{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#ffd700,#d4af37);color:#000;font-weight:800;cursor:pointer}
-  .btn:disabled{background:#444;color:#777;cursor:not-allowed}
-  .message{margin:16px 0;padding:12px;border-radius:8px;display:none}
-  .message.active{display:block}
-  .message.success{background:rgba(40,167,69,.08);color:#8fe08f;border:1px solid #2b7a44}
-  .message.error{background:rgba(220,53,69,.06);color:#ff9aa8;border:1px solid #8a2a33}
-  .loading{display:none;text-align:center;color:#ffd700;margin-top:10px}
-  .loading.active{display:block}
-  .muted{color:#999;font-size:.9rem}
-  @media(max-width:640px){.flex{flex-direction:column}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#000;color:#fff;padding:20px;min-height:100vh}
+.container{max-width:900px;margin:0 auto;background:#111;border:1px solid #333;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.header{background:#000;color:#ffd700;padding:28px;text-align:center;border-bottom:2px solid #ffd700}
+.header h1{margin-bottom:6px;font-size:1.8rem}
+.content{padding:28px}
+label{display:block;margin-bottom:6px;color:#ffd700;font-weight:600}
+input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:1rem;margin-bottom:14px}
+.flex{display:flex;gap:12px}
+.col{flex:1}
+.time-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:8px}
+.slot{padding:10px;border-radius:8px;background:#222;border:1px solid #444;text-align:center;cursor:pointer;user-select:none}
+.slot:hover:not(.disabled){background:#2a2a2a;border-color:#ffd700;transform:translateY(-2px)}
+.slot.selected{background:#ffd700;color:#000;border-color:#ffd700;font-weight:700}
+.slot.disabled{background:#1a1a1a;color:#666;opacity:.6;cursor:not-allowed;text-decoration:line-through}
+.btn{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#ffd700,#d4af37);color:#000;font-weight:800;cursor:pointer}
+.btn:disabled{background:#444;color:#777;cursor:not-allowed}
+.message{margin:16px 0;padding:12px;border-radius:8px;display:none}
+.message.active{display:block}
+.message.success{background:rgba(40,167,69,.08);color:#8fe08f;border:1px solid #2b7a44}
+.message.error{background:rgba(220,53,69,.06);color:#ff9aa8;border:1px solid #8a2a33}
+.loading{display:none;text-align:center;color:#ffd700;margin-top:10px}
+.loading.active{display:block}
+.muted{color:#999;font-size:.9rem}
+.gold-note{color:#FFD700;font-size:0.9rem;margin-top:10px;text-align:center}
+@media(max-width:640px){.flex{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -69,9 +70,9 @@
             <input id="date" type="date" required>
           </div>
           <div class="col">
-            <label for="barber">Choose barber *</label>
+            <label for="barber">Choose Master Barber *</label>
             <select id="barber" required>
-              <option value="">-- choose barber --</option>
+              <option value="">-- choose master barber --</option>
               <option value="Moh">Moh</option>
               <option value="Alex">Alex</option>
               <option value="Yass">Yass</option>
@@ -87,261 +88,186 @@
         <label for="notes">Notes (optional)</label>
         <textarea id="notes" rows="3" placeholder="Anything we should know?"></textarea>
 
+        <p class="gold-note">At South Fade we kindly ask you to cancel your booking before rescheduling.</p>
+
         <div style="margin-top:14px">
           <button id="submitBtn" class="btn" type="submit"><i class="fas fa-calendar-check"></i> Book appointment</button>
         </div>
-        <div id="loading" class="loading"><div class="spinner"></div>Processing…</div>
+        <div id="loading" class="loading">Processing...</div>
       </form>
 
-      <p class="muted" style="margin-top:18px">If you see a server error, open browser DevTools (Console) and paste the response shown there — I can help diagnose quickly.</p>
+      <p class="muted" style="margin-top:18px">If you see a server error, open browser DevTools (Console) and share it — helps fix quickly.</p>
     </div>
   </div>
 
 <script>
-(() => {
-  // ----- CONFIG (your Apps Script URL) -----
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec";
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
 
-  // Services list
-  const services = [
-    {cat:'Classic/Fade', items:[
-      {name:'Buzz cut Fade', price:24, dur:40},
-      {name:'Wash & cut', price:25, dur:40},
-      {name:'Skin Fade', price:27, dur:40}
-    ]},
-    {cat:'Scissor Cut', items:[
-      {name:'Scissor Cut', price:27, dur:40},
-      {name:'Restyle Cut', price:30, dur:40}
-    ]},
-    {cat:'Beard Trim', items:[
-      {name:'Beard Trim Clipper', price:17, dur:30},
-      {name:'Beard Trim + Hot Towel', price:20, dur:30}
-    ]},
-    {cat:'Special Treatment', items:[
-      {name:'Facial', price:20, dur:30},
-      {name:'Face Mask', price:10, dur:30}
-    ]}
-  ];
+const services = [
+  {cat:'Classic/Fade', items:[
+    {name:'Buzz cut Fade', price:24, dur:40},
+    {name:'Wash & cut', price:25, dur:40},
+    {name:'Skin Fade', price:27, dur:40}
+  ]},
+  {cat:'Scissor Cut', items:[
+    {name:'Scissor Cut', price:27, dur:40},
+    {name:'Restyle Cut', price:30, dur:40}
+  ]},
+  {cat:'Beard Trim', items:[
+    {name:'Beard Trim Clipper', price:17, dur:30},
+    {name:'Beard Trim + Hot Towel', price:20, dur:30}
+  ]},
+  {cat:'Special Treatment', items:[
+    {name:'Facial', price:20, dur:30},
+    {name:'Face Mask', price:10, dur:30}
+  ]}
+];
 
-  // Barber working schedule (0 = Sun)
-  const barberSchedule = {
-    Moh: [1,2,3,4,5,6],     // off Sunday
-    Alex: [0,1,2,3,4,5,6],  // all week
-    Yass: [0,3,4,5,6],      // off Mon & Tue
-    Ali: [1,2,3,4,5]        // off Sat & Sun
-  };
+const barberSchedule = {
+  Moh:[1,2,3,4,5,6],
+  Alex:[0,1,2,3,4,5,6],
+  Yass:[0,3,4,5,6],
+  Ali:[1,2,3,4,5]
+};
 
-  // DOM refs
-  const form = document.getElementById('bookingForm');
-  const serviceSel = document.getElementById('service');
-  const dateInp = document.getElementById('date');
-  const barberSel = document.getElementById('barber');
-  const slotsDiv = document.getElementById('slots');
-  const timeInp = document.getElementById('time');
-  const notesInp = document.getElementById('notes');
-  const msgDiv = document.getElementById('msg');
-  const submitBtn = document.getElementById('submitBtn');
-  const loadingEl = document.getElementById('loading');
+const form = document.getElementById('bookingForm');
+const serviceSel = document.getElementById('service');
+const dateInp = document.getElementById('date');
+const barberSel = document.getElementById('barber');
+const slotsDiv = document.getElementById('slots');
+const timeInp = document.getElementById('time');
+const notesInp = document.getElementById('notes');
+const msgDiv = document.getElementById('msg');
+const submitBtn = document.getElementById('submitBtn');
+const loadingEl = document.getElementById('loading');
 
-  // ------------------ UI HELPERS ------------------
-  function showMessage(text, type='error', duration=5000) {
-    msgDiv.textContent = text;
-    msgDiv.className = `message ${type} active`;
-    setTimeout(()=>msgDiv.classList.remove('active'), duration);
-  }
+function showMessage(text, type='error', dur=6000){
+  msgDiv.textContent = text;
+  msgDiv.className = `message ${type} active`;
+  setTimeout(()=>msgDiv.classList.remove('active'), dur);
+}
 
-  function populateServices() {
-    services.forEach(group => {
-      const og = document.createElement('optgroup');
-      og.label = group.cat;
-      group.items.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify(item);
-        opt.textContent = `${item.name} — £${item.price}`;
-        og.appendChild(opt);
-      });
-      serviceSel.appendChild(og);
+function populateServices(){
+  services.forEach(group=>{
+    const og=document.createElement('optgroup');
+    og.label=group.cat;
+    group.items.forEach(item=>{
+      const opt=document.createElement('option');
+      opt.value=JSON.stringify(item);
+      opt.textContent=`${item.name} — £${item.price}`;
+      og.appendChild(opt);
     });
+    serviceSel.appendChild(og);
+  });
+}
+
+function updateBarbersForDate(dateStr){
+  if(!dateStr)return;
+  const day=new Date(dateStr).getDay();
+  Array.from(barberSel.options).forEach(opt=>{
+    if(!opt.value)return;
+    const sched=barberSchedule[opt.value];
+    if(Array.isArray(sched)&&!sched.includes(day)){
+      opt.disabled=true;
+    }else opt.disabled=false;
+  });
+}
+
+function genSlots(open,close,dur){
+  const out=[];
+  for(let h=open;h<close;h++){
+    for(let m=0;m<60;m+=dur) out.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
   }
+  return out;
+}
 
-  // ------------------ BARBER AVAILABILITY ------------------
-  function updateBarbersForDate(dateStr) {
-    if(!dateStr) return;
-    const day = new Date(dateStr).getDay();
+async function getBookedSlots(date,barber){
+  try{
+    const res=await fetch(`${SCRIPT_URL}?action=getBookings&date=${date}&barber=${barber}`);
+    return await res.json();
+  }catch(e){
+    console.error(e);
+    showMessage('Error fetching slots','error');
+    return [];
+  }
+}
 
-    Array.from(barberSel.options).forEach(opt => {
-      if(!opt.value) return; // skip placeholder
+async function renderSlots(){
+  timeInp.value=''; slotsDiv.innerHTML='';
+  const svcVal=serviceSel.value;
+  const dateVal=dateInp.value;
+  const barberVal=barberSel.value;
+  if(!svcVal||!dateVal||!barberVal){
+    slotsDiv.innerHTML='<div class="muted">Select service, date, and barber</div>';
+    return;
+  }
+  const svc=JSON.parse(svcVal);
+  const day=new Date(dateVal).getDay();
+  const [open,close]=(day===0)?[9,17]:(day===6)?[9,19]:[9,20];
+  const all=genSlots(open,close,svc.dur);
+  const booked=await getBookedSlots(dateVal,barberVal);
 
-      const name = opt.value;
-      const worksDays = barberSchedule[name];
-      const isWorking = Array.isArray(worksDays) && worksDays.includes(day);
+  all.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='slot';
+    el.textContent=t;
+    if(booked.includes(t))el.classList.add('disabled');
+    else el.onclick=()=>{
+      document.querySelectorAll('.slot.selected').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected');
+      timeInp.value=t;
+    };
+    slotsDiv.appendChild(el);
+  });
+}
 
-      if(!isWorking) {
-        opt.disabled = true;
-        if(!opt.textContent.includes('(off today)')) {
-          opt.textContent += ' (off today)';
-        }
-      } else {
-        opt.disabled = false;
-        opt.textContent = name; // reset text
-      }
+async function createBooking(payload){
+  try{
+    const res=await fetch(SCRIPT_URL,{
+      method:'POST',
+      body:JSON.stringify(payload),
+      headers:{'Content-Type':'application/json'}
     });
-
-    // If currently selected barber is off, reset selection
-    if(barberSel.value && barberSel.options[barberSel.selectedIndex].disabled) {
-      barberSel.value = '';
-      showMessage('Selected barber is off that day — please choose another.', 'error', 4000);
-    }
+    return await res.json();
+  }catch(e){
+    console.error(e);
+    return {success:false,error:'Server error'};
   }
+}
 
-  // ------------------ SLOTS ------------------
-  function genSlots(openHour, closeHour, durMin) {
-    const out = [];
-    for(let h=openHour; h<closeHour; h++){
-      for(let m=0; m<60; m+=durMin){
-        out.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
-      }
-    }
-    return out;
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const name=form.name.value.trim();
+  const email=form.email.value.trim();
+  const phone=form.phone.value.trim();
+  const svc=serviceSel.value?JSON.parse(serviceSel.value):null;
+  const date=dateInp.value;
+  const barber=barberSel.value;
+  const time=timeInp.value;
+  const notes=notesInp.value.trim();
+  if(!name||!email||!phone||!svc||!date||!barber||!time){
+    showMessage('Please complete all required fields','error');return;
   }
-
-  async function getBookedSlots(date, barber) {
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getBookings&date=${encodeURIComponent(date)}&barber=${encodeURIComponent(barber)}`);
-      const json = await res.json();
-      console.debug('getBookings response', json);
-      return Array.isArray(json.bookedSlots) ? json.bookedSlots : [];
-    } catch (err) {
-      console.error('getBookedSlots error', err);
-      showMessage('Unable to load booked slots from server.', 'error');
-      return [];
-    }
+  submitBtn.disabled=true;loadingEl.classList.add('active');
+  const payload={action:'createBooking',name,email,phone,service:svc.name,price:svc.price,date,time,barber,notes};
+  const result=await createBooking(payload);
+  if(result.success){
+    showMessage('Booking confirmed! Check your email.','success',7000);
+    form.reset();slotsDiv.innerHTML='';
+  }else{
+    showMessage(result.error||'Booking failed.','error',8000);
   }
+  submitBtn.disabled=false;loadingEl.classList.remove('active');
+});
 
-  async function renderSlots() {
-    timeInp.value = '';
-    slotsDiv.innerHTML = '';
+dateInp.addEventListener('change',()=>{updateBarbersForDate(dateInp.value);renderSlots();});
+barberSel.addEventListener('change',renderSlots);
+serviceSel.addEventListener('change',renderSlots);
 
-    const svcVal = serviceSel.value;
-    const dateVal = dateInp.value;
-    const barberVal = barberSel.value;
-
-    if(!svcVal || !dateVal || !barberVal) {
-      slotsDiv.innerHTML = `<div class="muted">Select service, date & barber to view slots.</div>`;
-      return;
-    }
-
-    let svc;
-    try { svc = JSON.parse(svcVal); } catch(e){ svc = null; }
-    if(!svc || !svc.dur) {
-      showMessage('Invalid service selected', 'error');
-      return;
-    }
-
-    const day = new Date(dateVal).getDay();
-    const [open, close] = (day === 0) ? [9,17] : (day === 6) ? [9,19] : [9,20];
-    const allSlots = genSlots(open, close, svc.dur);
-
-    const booked = await getBookedSlots(dateVal, barberVal);
-    allSlots.forEach(t => {
-      const el = document.createElement('div');
-      el.className = 'slot';
-      el.textContent = t;
-      if(booked.includes(t)) {
-        el.classList.add('disabled');
-      } else {
-        el.addEventListener('click', () => {
-          document.querySelectorAll('.slot.selected').forEach(s => s.classList.remove('selected'));
-          el.classList.add('selected');
-          timeInp.value = t;
-        });
-      }
-      slotsDiv.appendChild(el);
-    });
-
-    if(allSlots.length === 0) {
-      slotsDiv.innerHTML = `<div class="muted">No slots available.</div>`;
-    }
-  }
-
-  // ------------------ SUBMIT ------------------
-  async function createBooking(payload) {
-    const res = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-    const json = await res.json();
-    console.debug('createBooking response', json);
-    return json;
-  }
-
-  function attachEvents() {
-    dateInp.addEventListener('change', () => {
-      updateBarbersForDate(dateInp.value);
-      renderSlots();
-    });
-    barberSel.addEventListener('change', renderSlots);
-    serviceSel.addEventListener('change', renderSlots);
-
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const svc = serviceSel.value ? JSON.parse(serviceSel.value) : null;
-      const date = dateInp.value;
-      const barber = barberSel.value;
-      const time = timeInp.value;
-      const notes = notesInp.value.trim();
-
-      if(!name || !email || !phone || !svc || !date || !barber || !time) {
-        showMessage('Please fill all required fields & pick a time slot.', 'error');
-        return;
-      }
-
-      const payload = {
-        action: 'createBooking',
-        name, email, phone,
-        service: svc.name,
-        price: svc.price,
-        date, time, barber, notes
-      };
-
-      submitBtn.disabled = true;
-      loadingEl.classList.add('active');
-      msgDiv.className = 'message';
-
-      try {
-        const res = await createBooking(payload);
-        if(res.success) {
-          showMessage('Booking confirmed! Check your email.', 'success', 7000);
-          form.reset();
-          slotsDiv.innerHTML = '';
-        } else {
-          showMessage(res.error || 'Booking failed. Try again.', 'error', 8000);
-        }
-      } catch (err) {
-        console.error(err);
-        showMessage('Server error. Check console.', 'error', 10000);
-      } finally {
-        submitBtn.disabled = false;
-        loadingEl.classList.remove('active');
-      }
-    });
-  }
-
-  function init() {
-    populateServices();
-    dateInp.min = new Date().toISOString().split('T')[0];
-    attachEvents();
-  }
-
-  init();
-
-})();
+document.addEventListener('DOMContentLoaded',()=>{
+  populateServices();
+  dateInp.min=new Date().toISOString().split('T')[0];
+});
 </script>
-
 </body>
 </html>
