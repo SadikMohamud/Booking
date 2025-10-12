@@ -95,9 +95,9 @@ input[type="date"]{color-scheme:dark;}
       </div>
 
       <div class="form-group">
-        <label for="barber">Choose Barber <span>*</span></label>
+        <label for="barber">Choose Master Barber <span>*</span></label>
         <select id="barber" required>
-          <option value="">Select a Barber</option>
+          <option value="">Choose Master Barber</option>
           <option value="Moh">Moh</option>
           <option value="Alex">Alex</option>
           <option value="Yass">Yass</option>
@@ -136,7 +136,7 @@ const svcs = [
   {
     cat: 'Scissor Cut',
     items: [
-      { name: 'Basic Cut', price: 27, dur: 40 },
+      { name: 'Scissor Cut', price: 27, dur: 40 },
       { name: 'Restyle Cut', price: 30, dur: 40 }
     ]
   },
@@ -174,7 +174,7 @@ const svcs = [
   }
 ];
 
-const barbers={Moh:[1,2],Alex:[0,1,2,3,4,5,6],Yass:[4,5,6],Ali:[5,6,0]};
+const barbers={Moh:[1,2],Alex:[0,1,2,3,4,5,6],Yass:[0,4,5,6],Ali:[5,6,0]};
 
 const sel=document.getElementById('service'),
 dateInp=document.getElementById('date'),
@@ -272,14 +272,14 @@ async function fetchBooked(dt){
 async function submit(e){
   e.preventDefault();
   if(!timeInp.value){showMsg('Please select a time slot','error');return;}
-  if(!barberSel.value){showMsg('Please select a barber','error');return;}
+  if(!barberSel.value){showMsg('Please select a Master Barber','error');return;}
 
   btn.disabled=true;
   load.classList.add('active');
   msgDiv.classList.remove('active');
 
   const svc=JSON.parse(sel.value);
-  notes.value=`Barber: ${barberSel.value}`;
+  notes.value=`Master Barber: ${barberSel.value}`;
   const data={
     action:'createBooking',
     name:document.getElementById('name').value,
