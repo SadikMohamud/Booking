@@ -124,14 +124,54 @@ input[type="date"]{color-scheme:dark;}
 <script>
 const URL='https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
 
-const svcs=[
-  {cat:'Classic/Fade',items:[{name:'Buzz cut Fade',price:24,dur:40},{name:'Wash & cut',price:25,dur:40},{name:'Skin Fade',price:27,dur:40}]},
-  {cat:'Scissor Cut',items:[{name:'Basic Cut',price:27,dur:40}]},{name:'Restyle Cut',price:30,dur:40}]},,
-  {cat:'Beard Trim',items:[{name:'Beard Trim clipper',price:17,dur:30},{name:'Beard trim Shape up & hot Towel',price:20,dur:30},{name:'Hot Towel Shave',price:25,dur:40}]},
-  {cat:'Special Treatment',items:[{name:'Nose & Ear waxing',price:10,dur:20},{name:'Threading',price:10,dur:20},{name:'Facial',price:20,dur:30},{name:'Face mask',price:10,dur:30}]},
-  {cat:'Kids Cut',items:[{name:'Boys Cut ',price:20,dur:30},{name:'Girls Cut ',price:25,dur:30},{name:'Student Cut',price:23,dur:40}]},
-{name:'Student Skin fade',price:25,dur:40}]},
-  {cat:'O.A.P Haircut',items:[{name:'O.A.P Haircut',price:22,dur:40}]}
+const svcs = [
+  {
+    cat: 'Classic/Fade',
+    items: [
+      { name: 'Buzz cut Fade', price: 24, dur: 40 },
+      { name: 'Wash & cut', price: 25, dur: 40 },
+      { name: 'Skin Fade', price: 27, dur: 40 }
+    ]
+  },
+  {
+    cat: 'Scissor Cut',
+    items: [
+      { name: 'Basic Cut', price: 27, dur: 40 },
+      { name: 'Restyle Cut', price: 30, dur: 40 }
+    ]
+  },
+  {
+    cat: 'Beard Trim',
+    items: [
+      { name: 'Beard Trim clipper', price: 17, dur: 30 },
+      { name: 'Beard trim Shape up & hot Towel', price: 20, dur: 30 },
+      { name: 'Hot Towel Shave', price: 25, dur: 40 }
+    ]
+  },
+  {
+    cat: 'Special Treatment',
+    items: [
+      { name: 'Nose & Ear waxing', price: 10, dur: 20 },
+      { name: 'Threading', price: 10, dur: 20 },
+      { name: 'Facial', price: 20, dur: 30 },
+      { name: 'Face mask', price: 10, dur: 30 }
+    ]
+  },
+  {
+    cat: 'Kids Cut',
+    items: [
+      { name: 'Boys Cut', price: 20, dur: 30 },
+      { name: 'Girls Cut', price: 25, dur: 30 },
+      { name: 'Student Cut', price: 23, dur: 40 },
+      { name: 'Student Skin Fade', price: 25, dur: 40 }
+    ]
+  },
+  {
+    cat: 'O.A.P Haircut',
+    items: [
+      { name: 'O.A.P Haircut', price: 22, dur: 40 }
+    ]
+  }
 ];
 
 const barbers={Moh:[1,2],Alex:[0,1,2,3,4,5,6],Yass:[4,5,6],Ali:[5,6,0]};
