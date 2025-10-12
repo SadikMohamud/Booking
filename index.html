@@ -102,7 +102,7 @@
   // ----- CONFIG (your Apps Script URL) -----
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec";
 
-  // Services list (same structure used in your apps script frontend)
+  // Services list
   const services = [
     {cat:'Classic/Fade', items:[
       {name:'Buzz cut Fade', price:24, dur:40},
@@ -123,15 +123,15 @@
     ]}
   ];
 
-  // Client-side barber schedule (0=Sun)
+  // Barber working schedule (0 = Sun)
   const barberSchedule = {
-    Moh: [1,2,3,4,5,6],
-    Alex: [0,1,2,3,4,5,6], // Alex works every day
-    Yass: [0,3,4,5,6],
-    Ali: [1,2,3,4,5]
+    Moh: [1,2,3,4,5,6],     // off Sunday
+    Alex: [0,1,2,3,4,5,6],  // all week
+    Yass: [0,3,4,5,6],      // off Mon & Tue
+    Ali: [1,2,3,4,5]        // off Sat & Sun
   };
 
-  // DOM
+  // DOM refs
   const form = document.getElementById('bookingForm');
   const serviceSel = document.getElementById('service');
   const dateInp = document.getElementById('date');
@@ -143,15 +143,14 @@
   const submitBtn = document.getElementById('submitBtn');
   const loadingEl = document.getElementById('loading');
 
-  // helper show message
-  function showMessage(text, type = 'error', duration = 5000) {
+  // ------------------ UI HELPERS ------------------
+  function showMessage(text, type='error', duration=5000) {
     msgDiv.textContent = text;
     msgDiv.className = `message ${type} active`;
-    setTimeout(()=> msgDiv.classList.remove('active'), duration);
+    setTimeout(()=>msgDiv.classList.remove('active'), duration);
   }
 
-  // populate services
-  function populateServices(){
+  function populateServices() {
     services.forEach(group => {
       const og = document.createElement('optgroup');
       og.label = group.cat;
@@ -165,25 +164,38 @@
     });
   }
 
-  // update barber availability (grey out options)
-  function updateBarbersForDate(dateStr){
+  // ------------------ BARBER AVAILABILITY ------------------
+  function updateBarbersForDate(dateStr) {
     if(!dateStr) return;
     const day = new Date(dateStr).getDay();
+
     Array.from(barberSel.options).forEach(opt => {
       if(!opt.value) return; // skip placeholder
-      const sched = barberSchedule[opt.value];
-      if(Array.isArray(sched) && !sched.includes(day)){
+
+      const name = opt.value;
+      const worksDays = barberSchedule[name];
+      const isWorking = Array.isArray(worksDays) && worksDays.includes(day);
+
+      if(!isWorking) {
         opt.disabled = true;
-        opt.classList.add('disabled');
+        if(!opt.textContent.includes('(off today)')) {
+          opt.textContent += ' (off today)';
+        }
       } else {
         opt.disabled = false;
-        opt.classList.remove('disabled');
+        opt.textContent = name; // reset text
       }
     });
+
+    // If currently selected barber is off, reset selection
+    if(barberSel.value && barberSel.options[barberSel.selectedIndex].disabled) {
+      barberSel.value = '';
+      showMessage('Selected barber is off that day — please choose another.', 'error', 4000);
+    }
   }
 
-  // generate slots between open/close every dur minutes
-  function genSlots(openHour, closeHour, durMin){
+  // ------------------ SLOTS ------------------
+  function genSlots(openHour, closeHour, durMin) {
     const out = [];
     for(let h=openHour; h<closeHour; h++){
       for(let m=0; m<60; m+=durMin){
@@ -193,25 +205,20 @@
     return out;
   }
 
-  // fetch booked slots from Apps Script for date+barber
-  async function getBookedSlots(date, barber){
-    try{
-      const resp = await fetch(`${SCRIPT_URL}?action=getBookings&date=${encodeURIComponent(date)}&barber=${encodeURIComponent(barber)}`);
-      const json = await resp.json();
-      // debug: log server body
+  async function getBookedSlots(date, barber) {
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=getBookings&date=${encodeURIComponent(date)}&barber=${encodeURIComponent(barber)}`);
+      const json = await res.json();
       console.debug('getBookings response', json);
       return Array.isArray(json.bookedSlots) ? json.bookedSlots : [];
-    }catch(err){
+    } catch (err) {
       console.error('getBookedSlots error', err);
-      // show short message but keep console error for debug
-      showMessage('Unable to load booked slots from server (see console).', 'error', 6000);
+      showMessage('Unable to load booked slots from server.', 'error');
       return [];
     }
   }
 
-  // render available slots (disabling booked ones)
-  async function renderSlots(){
-    // clear selection
+  async function renderSlots() {
     timeInp.value = '';
     slotsDiv.innerHTML = '';
 
@@ -219,8 +226,8 @@
     const dateVal = dateInp.value;
     const barberVal = barberSel.value;
 
-    if(!svcVal || !dateVal || !barberVal){
-      slotsDiv.innerHTML = `<div class="muted" style="color:#999">Select service, date and barber to see available times</div>`;
+    if(!svcVal || !dateVal || !barberVal) {
+      slotsDiv.innerHTML = `<div class="muted">Select service, date & barber to view slots.</div>`;
       return;
     }
 
@@ -231,55 +238,45 @@
       return;
     }
 
-    // business hours: Sun 9-17, Sat 9-19, Mon-Fri 9-20
     const day = new Date(dateVal).getDay();
     const [open, close] = (day === 0) ? [9,17] : (day === 6) ? [9,19] : [9,20];
     const allSlots = genSlots(open, close, svc.dur);
 
-    // get booked
     const booked = await getBookedSlots(dateVal, barberVal);
-
     allSlots.forEach(t => {
-      const d = document.createElement('div');
-      d.className = 'slot';
-      d.textContent = t;
-      if(booked.includes(t)){
-        d.classList.add('disabled');
+      const el = document.createElement('div');
+      el.className = 'slot';
+      el.textContent = t;
+      if(booked.includes(t)) {
+        el.classList.add('disabled');
       } else {
-        d.addEventListener('click', ()=> {
-          // unselect others
+        el.addEventListener('click', () => {
           document.querySelectorAll('.slot.selected').forEach(s => s.classList.remove('selected'));
-          d.classList.add('selected');
+          el.classList.add('selected');
           timeInp.value = t;
         });
       }
-      slotsDiv.appendChild(d);
+      slotsDiv.appendChild(el);
     });
 
-    if(allSlots.length === 0){
-      slotsDiv.innerHTML = `<div style="color:#999">No slots available</div>`;
+    if(allSlots.length === 0) {
+      slotsDiv.innerHTML = `<div class="muted">No slots available.</div>`;
     }
   }
 
-  // POST createBooking to Apps Script
-  async function createBooking(payload){
-    try {
-      const res = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-      });
-      const json = await res.json();
-      console.debug('createBooking response', json);
-      return json;
-    } catch(err) {
-      console.error('createBooking fetch error', err);
-      throw err;
-    }
+  // ------------------ SUBMIT ------------------
+  async function createBooking(payload) {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const json = await res.json();
+    console.debug('createBooking response', json);
+    return json;
   }
 
-  // attach events
-  function attachEvents(){
+  function attachEvents() {
     dateInp.addEventListener('change', () => {
       updateBarbersForDate(dateInp.value);
       renderSlots();
@@ -287,9 +284,9 @@
     barberSel.addEventListener('change', renderSlots);
     serviceSel.addEventListener('change', renderSlots);
 
-    form.addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      // client validation
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
       const name = form.name.value.trim();
       const email = form.email.value.trim();
       const phone = form.phone.value.trim();
@@ -299,41 +296,35 @@
       const time = timeInp.value;
       const notes = notesInp.value.trim();
 
-      if(!name || !email || !phone || !svc || !date || !barber || !time){
-        showMessage('Please fill all required fields and pick a time slot', 'error');
+      if(!name || !email || !phone || !svc || !date || !barber || !time) {
+        showMessage('Please fill all required fields & pick a time slot.', 'error');
         return;
       }
 
-      // Prepare payload
       const payload = {
         action: 'createBooking',
         name, email, phone,
         service: svc.name,
         price: svc.price,
-        date, time,
-        barber,
-        notes
+        date, time, barber, notes
       };
 
-      // UI: disable
       submitBtn.disabled = true;
       loadingEl.classList.add('active');
-      msgDiv.className = 'message'; // hide
+      msgDiv.className = 'message';
 
       try {
-        const result = await createBooking(payload);
-        if(result && result.success){
+        const res = await createBooking(payload);
+        if(res.success) {
           showMessage('Booking confirmed! Check your email.', 'success', 7000);
           form.reset();
           slotsDiv.innerHTML = '';
         } else {
-          // If server returned an error message, show it (useful for double-book prevention)
-          const errText = (result && result.error) ? result.error : 'Booking failed. Server returned an error.';
-          showMessage(errText, 'error', 8000);
+          showMessage(res.error || 'Booking failed. Try again.', 'error', 8000);
         }
       } catch (err) {
-        // network or other error
-        showMessage('Server error. Please check the browser console and paste the error here for help.', 'error', 10000);
+        console.error(err);
+        showMessage('Server error. Check console.', 'error', 10000);
       } finally {
         submitBtn.disabled = false;
         loadingEl.classList.remove('active');
@@ -341,25 +332,16 @@
     });
   }
 
-  // init run
-  function init(){
+  function init() {
     populateServices();
-    // set date min to today
     dateInp.min = new Date().toISOString().split('T')[0];
     attachEvents();
   }
 
-  // start
   init();
-
-  // expose small debug helper to console (optional)
-  window._southFadeDebug = {
-    SCRIPT_URL,
-    renderSlots,
-    getBookedSlots
-  };
 
 })();
 </script>
+
 </body>
 </html>
