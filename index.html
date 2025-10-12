@@ -98,6 +98,7 @@ input[type="date"]{color-scheme:dark;}
         <label for="barber">Choose Master Barber <span>*</span></label>
         <select id="barber" required>
           <option value="">Choose Master Barber</option>
+          <option value="Any">Any Master Barber</option>
           <option value="Moh">Moh</option>
           <option value="Alex">Alex</option>
           <option value="Yass">Yass</option>
@@ -216,6 +217,7 @@ function filterBarbers(dow){
   for(const opt of barberSel.options)opt.disabled=false;
   for(let i=1;i<barberSel.options.length;i++){
     const val=barberSel.options[i].value;
+    if(val==='Any')continue;
     const avail=barbers[val]||[];
     barberSel.options[i].disabled=!avail.includes(dow);
   }
