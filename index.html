@@ -106,10 +106,6 @@ input[type="date"]{color-scheme:dark;}
         </select>
       </div>
 
-      <div class="form-group" style="display:none;">
-        <textarea id="notes" rows="1"></textarea>
-      </div>
-
       <button type="submit" class="submit-btn" id="btn">
         <i class="fas fa-calendar-check"></i> Book Appointment
       </button>
@@ -125,44 +121,7 @@ input[type="date"]{color-scheme:dark;}
 <script>
 const URL='https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
 
-const svcs = [
-  { cat:'Classic/Fade', items:[
-      { name:'Buzz cut Fade', price:24, dur:40 },
-      { name:'Wash & cut', price:25, dur:40 },
-      { name:'Skin Fade', price:27, dur:40 }
-  ]},
-  { cat:'Scissor Cut', items:[
-      { name:'Scissor Cut', price:27, dur:40 },
-      { name:'Restyle Cut', price:30, dur:40 }
-  ]},
-  { cat:'Beard Trim', items:[
-      { name:'Beard Trim clipper', price:17, dur:30 },
-      { name:'Beard trim Shape up & hot Towel', price:20, dur:30 },
-      { name:'Hot Towel Shave', price:25, dur:40 }
-  ]},
-  { cat:'Special Treatment', items:[
-      { name:'Nose & Ear waxing', price:10, dur:20 },
-      { name:'Threading', price:10, dur:20 },
-      { name:'Facial', price:20, dur:30 },
-      { name:'Face mask', price:10, dur:30 }
-  ]},
-  { cat:'Kids Cut', items:[
-      { name:'Boys Cut', price:20, dur:30 },
-      { name:'Girls Cut', price:25, dur:30 },
-      { name:'Student Cut', price:23, dur:40 },
-      { name:'Student Skin Fade', price:25, dur:40 }
-  ]},
-  { cat:'O.A.P Haircut', items:[
-      { name:'O.A.P Haircut', price:22, dur:40 }
-  ]}
-];
-
-const barbers = {
-  Moh:[1,2],
-  Alex:[0,1,2,3,4,5,6],
-  Yass:[0,4,5,6],
-  Ali:[5,6,0]
-};
+const svcs=[{cat:'Classic/Fade',items:[{name:'Buzz cut Fade',price:24,dur:40},{name:'Wash & cut',price:25,dur:40},{name:'Skin Fade',price:27,dur:40}]},{cat:'Scissor Cut',items:[{name:'Scissor Cut',price:27,dur:40},{name:'Restyle Cut',price:30,dur:40}]},{cat:'Beard Trim',items:[{name:'Beard Trim clipper',price:17,dur:30},{name:'Beard trim Shape up & hot Towel',price:20,dur:30},{name:'Hot Towel Shave',price:25,dur:40}]},{cat:'Special Treatment',items:[{name:'Nose & Ear waxing',price:10,dur:20},{name:'Threading',price:10,dur:20},{name:'Facial',price:20,dur:30},{name:'Face mask',price:10,dur:30}]},{cat:'Kids Cut',items:[{name:'Boys Cut',price:20,dur:30},{name:'Girls Cut',price:25,dur:30},{name:'Student Cut',price:23,dur:40},{name:'Student Skin Fade',price:25,dur:40}]},{cat:'O.A.P Haircut',items:[{name:'O.A.P Haircut',price:22,dur:40}]}];
 
 const sel=document.getElementById('service'),
 dateInp=document.getElementById('date'),
@@ -172,8 +131,7 @@ frm=document.getElementById('form'),
 btn=document.getElementById('btn'),
 load=document.getElementById('load'),
 msgDiv=document.getElementById('msg'),
-barberSel=document.getElementById('barber'),
-notes=document.getElementById('notes');
+barberSel=document.getElementById('barber');
 
 function init(){
   svcs.forEach(c=>{
@@ -188,91 +146,60 @@ function init(){
     sel.appendChild(og);
   });
   dateInp.min=new Date().toISOString().split('T')[0];
-  dateInp.addEventListener('change',handleDateChange);
+  dateInp.addEventListener('change',loadSlots);
+  barberSel.addEventListener('change',loadSlots);
+  sel.addEventListener('change',loadSlots);
   frm.addEventListener('submit',submit);
 }
 
-function handleDateChange(){
-  if(!dateInp.value)return;
-  const [year,month,day]=dateInp.value.split('-').map(Number);
-  const d=new Date(year,month-1,day);
-  const dow=d.getDay();
-  filterBarbers(dow);
-  loadSlots();
-}
-
-function filterBarbers(dow){
-  for(const opt of barberSel.options)opt.disabled=false;
-  for(let i=1;i<barberSel.options.length;i++){
-    const val=barberSel.options[i].value;
-    if(val==='Any')continue;
-    const avail=barbers[val]||[];
-    barberSel.options[i].disabled=!avail.includes(dow);
-  }
-  const enabled=[...barberSel.options].filter(o=>!o.disabled&&o.value);
-  barberSel.value=enabled.length===1?enabled[0].value:'';
-}
-
-function loadSlots(){
-  if(!dateInp.value||!sel.value){
-    slotsDiv.innerHTML='<p style="color:#999">Please select service and date</p>';
-    return;
-  }
-  const [year,month,day]=dateInp.value.split('-').map(Number);
-  const d=new Date(year,month-1,day);
-  const dow=d.getDay();
-  const svc=JSON.parse(sel.value);
-  let open,close;
-  if(dow>=1&&dow<=5){open=9;close=20;}
-  else if(dow===6){open=9;close=19;}
-  else{open=9;close=18;}
-  const slots=genSlots(open,close,svc.dur);
-  fetchBooked(dateInp.value).then(booked=>{
-    slotsDiv.innerHTML='';
-    slots.forEach(s=>{
-      const div=document.createElement('div');
-      div.className='time-slot';
-      div.textContent=s;
-      if(booked.includes(s)){div.classList.add('disabled');}
-      else{div.onclick=()=>{document.querySelectorAll('.time-slot').forEach(x=>x.classList.remove('selected'));div.classList.add('selected');timeInp.value=s;}}
-      slotsDiv.appendChild(div);
-    });
-  });
-}
-
-function genSlots(st,end,dur){
+function genSlots(open,close,dur){
   const slots=[];
-  for(let h=st;h<end;h++){
+  for(let h=open;h<close;h++){
     for(let m=0;m<60;m+=dur){
-      const eh=Math.floor((h*60+m+dur)/60);
-      const em=(m+dur)%60;
-      if(eh<end||(eh===end&&em===0)){
-        slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
-      }
+      const label=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+      slots.push(label);
     }
   }
   return slots;
 }
 
-async function fetchBooked(dt){
+async function fetchBooked(date,barber){
   try{
-    const res=await fetch(`${URL}?action=getBookings&date=${dt}`);
+    const res=await fetch(`${URL}?action=getBookings&date=${date}&barber=${encodeURIComponent(barber)}`);
     const data=await res.json();
     return data.bookedSlots||[];
-  }catch(e){console.error(e);return[];}
+  }catch(e){
+    console.error(e);
+    return [];
+  }
+}
+
+async function loadSlots(){
+  const svcVal=sel.value, dateVal=dateInp.value, barberVal=barberSel.value;
+  if(!svcVal||!dateVal||!barberVal){
+    slotsDiv.innerHTML='<p style="color:#999">Please select service, date, and barber.</p>';
+    return;
+  }
+  const svc=JSON.parse(svcVal);
+  const day=new Date(dateVal).getDay();
+  const [open,close]=(day===0)?[9,18]:(day===6)?[9,19]:[9,20];
+  const allSlots=genSlots(open,close,svc.dur);
+  const booked=await fetchBooked(dateVal,barberVal);
+  slotsDiv.innerHTML='';
+  allSlots.forEach(slot=>{
+    const div=document.createElement('div');
+    div.className='time-slot';
+    div.textContent=slot;
+    if(booked.includes(slot)) div.classList.add('disabled');
+    else div.onclick=()=>{document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));div.classList.add('selected');timeInp.value=slot;};
+    slotsDiv.appendChild(div);
+  });
 }
 
 async function submit(e){
   e.preventDefault();
-  if(!timeInp.value){showMsg('Please select a time slot','error');return;}
-  if(!barberSel.value){showMsg('Please select a Master Barber','error');return;}
-
-  btn.disabled=true;
-  load.classList.add('active');
-  msgDiv.classList.remove('active');
-
+  if(!timeInp.value)return showMsg('Please select a time slot','error');
   const svc=JSON.parse(sel.value);
-  notes.value=`Master Barber: ${barberSel.value}`;
   const data={
     action:'createBooking',
     name:document.getElementById('name').value,
@@ -282,27 +209,34 @@ async function submit(e){
     price:svc.price,
     date:dateInp.value,
     time:timeInp.value,
-    notes:notes.value,
+    barber:barberSel.value,
     timestamp:new Date().toISOString()
   };
 
+  btn.disabled=true;
+  load.classList.add('active');
+  msgDiv.classList.remove('active');
+
   try{
-    await fetch(URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    showMsg('Booking confirmed! Check your email.','success');
-    frm.reset();
-    slotsDiv.innerHTML='';
-  }catch(e){
-    console.error(e);
-    showMsg('Booking submitted. Check your email.','success');
-    frm.reset();
+    const res=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const result=await res.json();
+    if(result.success){
+      showMsg('Booking confirmed! Check your email.','success');
+      frm.reset();slotsDiv.innerHTML='';
+    }else{
+      showMsg(result.error||'Booking failed. Try again.','error');
+    }
+  }catch(err){
+    console.error(err);
+    showMsg('Error connecting to server.','error');
   }finally{
     btn.disabled=false;
     load.classList.remove('active');
   }
 }
 
-function showMsg(txt,type){
-  msgDiv.textContent=txt;
+function showMsg(text,type){
+  msgDiv.textContent=text;
   msgDiv.className=`message ${type} active`;
   setTimeout(()=>msgDiv.classList.remove('active'),5000);
 }
