@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Book Appointment - South Fade</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -88,11 +88,11 @@ option.disabled{color:#666;background:#222;}
 <script>
 /************************************************************
  * SOUTH FADE BOOKING SYSTEM (Front-End)
- * Fully compatible with Apps Script backend & dashboard
+ * Cleaned, Optimized, and Fully Compatible with Apps Script
  ************************************************************/
 const URL = 'https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
 
-// Services
+// === SERVICES ===
 const svcs = [
   {cat:'Classic/Fade',items:[{name:'Buzz cut Fade',price:24,dur:40},{name:'Wash & cut',price:25,dur:40},{name:'Skin Fade',price:27,dur:40}]},
   {cat:'Scissor Cut',items:[{name:'Scissor Cut',price:27,dur:40},{name:'Restyle Cut',price:30,dur:40}]},
@@ -100,15 +100,15 @@ const svcs = [
   {cat:'Special Treatment',items:[{name:'Facial',price:20,dur:30},{name:'Face Mask',price:10,dur:30}]}
 ];
 
-// Barber working schedule (0=Sun)
+// === BARBER WORKING DAYS === (0=Sun)
 const workingDays = {
   Moh: [1,2,3,4,5,6],
-  Alex: [2,3,4,5,6],
+  Alex: [0,1,2,3,4,5,6], // Always available ✅
   Yass: [0,3,4,5,6],
-  Ali: [1,2,3,4,5],
+  Ali: [1,2,3,4,5]
 };
 
-// DOM elements
+// === DOM ELEMENTS ===
 const sel=document.getElementById('service'),
 dateInp=document.getElementById('date'),
 slotsDiv=document.getElementById('slots'),
@@ -119,7 +119,7 @@ load=document.getElementById('load'),
 msgDiv=document.getElementById('msg'),
 barberSel=document.getElementById('barber');
 
-// INIT
+// === INIT ===
 function init(){
   // Populate services
   svcs.forEach(c=>{
@@ -140,7 +140,7 @@ function init(){
   frm.addEventListener('submit',submit);
 }
 
-// Disable barbers not working that day
+// === UPDATE BARBERS BASED ON DAY ===
 function updateBarbers(){
   const dateVal=dateInp.value;
   if(!dateVal)return;
@@ -156,7 +156,7 @@ function updateBarbers(){
   });
 }
 
-// Generate slots
+// === GENERATE TIME SLOTS ===
 function genSlots(open,close,dur){
   const slots=[];
   for(let h=open;h<close;h++){
@@ -167,7 +167,7 @@ function genSlots(open,close,dur){
   return slots;
 }
 
-// Fetch booked times
+// === FETCH EXISTING BOOKINGS ===
 async function fetchBooked(date,barber){
   try{
     const res=await fetch(`${URL}?action=getBookings&date=${date}&barber=${encodeURIComponent(barber)}`);
@@ -179,7 +179,7 @@ async function fetchBooked(date,barber){
   }
 }
 
-// Load time slots
+// === LOAD AVAILABLE SLOTS ===
 async function loadSlots(){
   const svcVal=sel.value,dateVal=dateInp.value,barberVal=barberSel.value;
   if(!svcVal||!dateVal||!barberVal){
@@ -209,7 +209,7 @@ async function loadSlots(){
   });
 }
 
-// Submit form
+// === SUBMIT BOOKING ===
 async function submit(e){
   e.preventDefault();
   if(!timeInp.value)return showMsg('Please select a time slot','error');
@@ -228,23 +228,25 @@ async function submit(e){
   btn.disabled=true;load.classList.add('active');msgDiv.classList.remove('active');
   try{
     const res=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const result=await res.json();
+    console.log('Server response:',result);
     if(result.success){
       showMsg('✅ Booking confirmed!','success');
       frm.reset();
       slotsDiv.innerHTML='';
     }else{
-      showMsg(result.error||'Booking failed.','error');
+      showMsg(result.error||'Booking failed. Please try again.','error');
     }
   }catch(err){
-    console.error(err);
-    showMsg('Server error. Try again later.','error');
+    console.error('Booking error:',err);
+    showMsg('Server error. Please try again later.','error');
   }finally{
     btn.disabled=false;load.classList.remove('active');
   }
 }
 
-// Show message
+// === SHOW MESSAGE ===
 function showMsg(text,type){
   msgDiv.textContent=text;
   msgDiv.className=`message ${type} active`;
