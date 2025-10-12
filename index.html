@@ -119,9 +119,16 @@ input[type="date"]{color-scheme:dark;}
 </div>
 
 <script>
-const URL='https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
+const URL = 'https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
 
-const svcs=[{cat:'Classic/Fade',items:[{name:'Buzz cut Fade',price:24,dur:40},{name:'Wash & cut',price:25,dur:40},{name:'Skin Fade',price:27,dur:40}]},{cat:'Scissor Cut',items:[{name:'Scissor Cut',price:27,dur:40},{name:'Restyle Cut',price:30,dur:40}]},{cat:'Beard Trim',items:[{name:'Beard Trim clipper',price:17,dur:30},{name:'Beard trim Shape up & hot Towel',price:20,dur:30},{name:'Hot Towel Shave',price:25,dur:40}]},{cat:'Special Treatment',items:[{name:'Nose & Ear waxing',price:10,dur:20},{name:'Threading',price:10,dur:20},{name:'Facial',price:20,dur:30},{name:'Face mask',price:10,dur:30}]},{cat:'Kids Cut',items:[{name:'Boys Cut',price:20,dur:30},{name:'Girls Cut',price:25,dur:30},{name:'Student Cut',price:23,dur:40},{name:'Student Skin Fade',price:25,dur:40}]},{cat:'O.A.P Haircut',items:[{name:'O.A.P Haircut',price:22,dur:40}]}];
+const svcs = [
+  {cat:'Classic/Fade',items:[{name:'Buzz cut Fade',price:24,dur:40},{name:'Wash & cut',price:25,dur:40},{name:'Skin Fade',price:27,dur:40}]},
+  {cat:'Scissor Cut',items:[{name:'Scissor Cut',price:27,dur:40},{name:'Restyle Cut',price:30,dur:40}]},
+  {cat:'Beard Trim',items:[{name:'Beard Trim clipper',price:17,dur:30},{name:'Beard trim Shape up & hot Towel',price:20,dur:30},{name:'Hot Towel Shave',price:25,dur:40}]},
+  {cat:'Special Treatment',items:[{name:'Nose & Ear waxing',price:10,dur:20},{name:'Threading',price:10,dur:20},{name:'Facial',price:20,dur:30},{name:'Face mask',price:10,dur:30}]},
+  {cat:'Kids Cut',items:[{name:'Boys Cut',price:20,dur:30},{name:'Girls Cut',price:25,dur:30},{name:'Student Cut',price:23,dur:40},{name:'Student Skin Fade',price:25,dur:40}]},
+  {cat:'O.A.P Haircut',items:[{name:'O.A.P Haircut',price:22,dur:40}]}
+];
 
 const sel=document.getElementById('service'),
 dateInp=document.getElementById('date'),
@@ -169,7 +176,7 @@ async function fetchBooked(date,barber){
     const data=await res.json();
     return data.bookedSlots||[];
   }catch(e){
-    console.error(e);
+    console.error('Error fetching booked slots',e);
     return [];
   }
 }
@@ -218,17 +225,26 @@ async function submit(e){
   msgDiv.classList.remove('active');
 
   try{
-    const res=await fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    const result=await res.json();
+    const res = await fetch(URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const result = await res.json();
+    console.log('Booking response:', result);
+
     if(result.success){
       showMsg('Booking confirmed! Check your email.','success');
       frm.reset();slotsDiv.innerHTML='';
-    }else{
+    } else {
       showMsg(result.error||'Booking failed. Try again.','error');
     }
   }catch(err){
-    console.error(err);
-    showMsg('Error connecting to server.','error');
+    console.error('Booking error:', err);
+    showMsg('Error connecting to server. Please try again.','error');
   }finally{
     btn.disabled=false;
     load.classList.remove('active');
