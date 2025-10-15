@@ -6,32 +6,32 @@
 <title>Book Appointment - South Fade</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Inter,Arial,sans-serif;background:#000;color:#fff;padding:20px;min-height:100vh}
-  .container{max-width:900px;margin:0 auto;background:#111;border:1px solid #333;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.6)}
-  .header{background:#000;color:#ffd700;padding:28px;text-align:center;border-bottom:2px solid #ffd700}
-  .header h1{margin-bottom:6px;font-size:1.8rem}
-  .content{padding:28px}
-  label{display:block;margin-bottom:6px;color:#ffd700;font-weight:600}
-  input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:1rem;margin-bottom:14px}
-  .flex{display:flex;gap:12px}
-  .col{flex:1}
-  .time-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:8px}
-  .slot{padding:10px;border-radius:8px;background:#222;border:1px solid #444;text-align:center;cursor:pointer;user-select:none}
-  .slot:hover:not(.disabled){background:#2a2a2a;border-color:#ffd700;transform:translateY(-2px)}
-  .slot.selected{background:#ffd700;color:#000;border-color:#ffd700;font-weight:700}
-  .slot.disabled{background:#1a1a1a;color:#666;opacity:.6;cursor:not-allowed;text-decoration:line-through}
-  .btn{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#ffd700,#d4af37);color:#000;font-weight:800;cursor:pointer}
-  .btn:disabled{background:#444;color:#777;cursor:not-allowed}
-  .message{margin:16px 0;padding:12px;border-radius:8px;display:none}
-  .message.active{display:block}
-  .message.success{background:rgba(40,167,69,.08);color:#8fe08f;border:1px solid #2b7a44}
-  .message.error{background:rgba(220,53,69,.06);color:#ff9aa8;border:1px solid #8a2a33}
-  .loading{display:none;text-align:center;color:#ffd700;margin-top:10px}
-  .loading.active{display:block}
-  .muted{color:#999;font-size:.9rem}
-  .gold-note{color:#FFD700;font-size:0.9rem;margin-top:10px;text-align:center}
-  @media(max-width:640px){.flex{flex-direction:column}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Arial,sans-serif;background:#000;color:#fff;padding:20px;min-height:100vh}
+.container{max-width:900px;margin:0 auto;background:#111;border:1px solid #333;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.header{background:#000;color:#ffd700;padding:28px;text-align:center;border-bottom:2px solid #ffd700}
+.header h1{margin-bottom:6px;font-size:1.8rem}
+.content{padding:28px}
+label{display:block;margin-bottom:6px;color:#ffd700;font-weight:600}
+input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:1rem;margin-bottom:14px}
+.flex{display:flex;gap:12px}
+.col{flex:1}
+.time-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:8px}
+.slot{padding:10px;border-radius:8px;background:#222;border:1px solid #444;text-align:center;cursor:pointer;user-select:none}
+.slot:hover:not(.disabled){background:#2a2a2a;border-color:#ffd700;transform:translateY(-2px)}
+.slot.selected{background:#ffd700;color:#000;border-color:#ffd700;font-weight:700}
+.slot.disabled{background:#1a1a1a;color:#666;opacity:.6;cursor:not-allowed;text-decoration:line-through}
+.btn{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#ffd700,#d4af37);color:#000;font-weight:800;cursor:pointer}
+.btn:disabled{background:#444;color:#777;cursor:not-allowed}
+.message{margin:16px 0;padding:12px;border-radius:8px;display:none}
+.message.active{display:block}
+.message.success{background:rgba(40,167,69,.08);color:#8fe08f;border:1px solid #2b7a44}
+.message.error{background:rgba(220,53,69,.06);color:#ff9aa8;border:1px solid #8a2a33}
+.loading{display:none;text-align:center;color:#ffd700;margin-top:10px}
+.loading.active{display:block}
+.muted{color:#999;font-size:.9rem}
+.gold-note{color:#FFD700;font-size:0.9rem;margin-top:10px;text-align:center}
+@media(max-width:640px){.flex{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -78,7 +78,9 @@
         </div>
 
         <label>Available time slots *</label>
-        <div id="slots" class="time-slots" aria-live="polite"><div class="muted">Select service, date and master barber to load slots</div></div>
+        <div id="slots" class="time-slots" aria-live="polite">
+          <div class="muted">Select service, date and master barber to load slots</div>
+        </div>
         <input id="time" name="time" type="hidden" required>
 
         <label for="notes">Notes (optional)</label>
@@ -91,27 +93,50 @@
         </div>
         <div id="loading" class="loading">Processing...</div>
       </form>
+
+      <p class="muted" style="margin-top:18px">If you see a server error, open browser DevTools (Console) and paste the response shown there — I can help diagnose quickly.</p>
     </div>
   </div>
 
-<!-- Supabase UMD (v2) -->
+<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <script>
-(() => {
-  // ---- Replace with your project values (I used the ones you provided) ----
+(async function(){
+  // ---------- CONFIG (YOUR Supabase project) ----------
   const SUPABASE_URL = 'https://ufcfbggsjemgzcmdhpts.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmY2ZiZ2dzamVtZ3pjbWRocHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNjMzNjYsImV4cCI6MjA3NTkzOTM2Nn0.IWB96tPDcVp36azPNLewik41xL3FrDjLLtIMqwT-4';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmY2ZiZ2dzamVtZ3pjbWRocHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNjMzNjYsImV4cCI6MjA3NTkzOTM2Nn0.IWB96tPDcVcCp36azPNLewik41xL3FrDjLLtIMqwT-4';
+  const supabase = supabasejs.createClient ? supabasejs.createClient(SUPABASE_URL, SUPABASE_KEY) : supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // ---------- Services fallback (if no 'services' table) ----------
+  const FALLBACK_SERVICES = [
+    { name:'Buzz cut Fade', price:24, dur:40 },
+    { name:'Wash & cut', price:25, dur:40 },
+    { name:'Skin Fade', price:27, dur:40 },
+    { name:'Scissor Cut', price:27, dur:40 },
+    { name:'Restyle Cut', price:30, dur:40 },
+    { name:'Beard Trim Clipper', price:17, dur:30 },
+    { name:'Beard Trim + Hot Towel', price:20, dur:30 },
+    { name:'Facial', price:20, dur:30 },
+    { name:'Face Mask', price:10, dur:30 }
+  ];
 
-  // business hours: Sun 9-18, Sat 9-19, Mon-Fri 9-20
-  function businessHours(day) {
-    if (day === 0) return [9,18];
-    if (day === 6) return [9,19];
-    return [9,20];
+  // ---------- Barber working days mapping (0=Sun) ----------
+  const BARBER_DAYS = {
+    Alex: [0,1,2,3,4,5,6],   // Alex all days
+    Yass: [3,4,5,6],        // Wed-Thu-Fri-Sat (Wed=3)
+    Moh: [1,2,3],           // Mon-Tue-Wed (if you meant Mon-Wed)
+    Ali: [5,6,0]            // Fri-Sat-Sun
+  };
+
+  // Shop hours:
+  function shopHoursForDay(dayNum){
+    if(dayNum === 0) return {open:9, close:18};   // Sun 9-18
+    if(dayNum === 6) return {open:9, close:19};   // Sat 9-19
+    return {open:9, close:20};                    // Mon-Fri 9-20
   }
 
+  // ---------- DOM ----------
   const form = document.getElementById('bookingForm');
   const serviceSel = document.getElementById('service');
   const dateInp = document.getElementById('date');
@@ -129,85 +154,99 @@
     setTimeout(()=> msgDiv.classList.remove('active'), duration);
   }
 
-  // load services and barbers from DB
-  async function loadData(){
-    try {
-      const srv = await supabase.from('services').select('*').order('id');
-      if (srv.error) throw srv.error;
-      serviceSel.innerHTML = '<option value="">-- choose a service --</option>';
-      srv.data.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify({ name: s.name, price: s.price, dur: s.duration_minutes });
-        opt.textContent = `${s.name} — £${Number(s.price).toFixed(2)}`;
-        serviceSel.appendChild(opt);
-      });
-
-      const br = await supabase.from('barbers').select('*').order('name');
-      if (br.error) throw br.error;
-      barberSel.innerHTML = '<option value="">-- choose master barber --</option>';
-      br.data.forEach(b => {
-        const opt = document.createElement('option');
-        opt.value = b.name;
-        opt.textContent = b.name;
-        barberSel.appendChild(opt);
-      });
-    } catch (err) {
-      console.error('loadData error', err);
-      showMessage('Failed to load services/barbers (check console)', 'error', 8000);
+  // fetch services from supabase (if exists)
+  async function loadServices(){
+    try{
+      const { data, error } = await supabase.from('services').select('*').order('name', { ascending:true });
+      if(error) { console.warn('services table not present or error', error); populateServices(FALLBACK_SERVICES); return; }
+      if(!data || data.length === 0) { populateServices(FALLBACK_SERVICES); return; }
+      const mapped = data.map(s => ({ name: s.name || s.service || s.title, price: s.price || s.cost || 0, dur: s.dur || 40 }));
+      populateServices(mapped);
+    }catch(e){
+      console.error('loadServices error', e);
+      populateServices(FALLBACK_SERVICES);
     }
   }
 
-  function genSlots(openH, closeH, dur){
-    const out = [];
-    for(let h=openH; h<closeH; h++){
-      for(let m=0; m<60; m+=dur) out.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+  function populateServices(list){
+    serviceSel.innerHTML = '<option value="">-- choose a service --</option>';
+    list.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = JSON.stringify(s);
+      opt.textContent = `${s.name} — £${s.price}`;
+      serviceSel.appendChild(opt);
+    });
+  }
+
+  // load barbers from supabase barbers table if exists, otherwise use keys from BARBER_DAYS
+  async function loadBarbers(){
+    try{
+      const { data, error } = await supabase.from('barbers').select('*').order('name', { ascending:true });
+      let list;
+      if(error || !data || data.length === 0){
+        list = Object.keys(BARBER_DAYS);
+      } else {
+        list = data.map(b => b.name);
+      }
+      barberSel.innerHTML = '<option value="">-- choose master barber --</option>';
+      list.forEach(b => {
+        const opt = document.createElement('option');
+        opt.value = b;
+        opt.textContent = b;
+        barberSel.appendChild(opt);
+      });
+      updateBarbersForDate(dateInp.value);
+    }catch(e){
+      console.error('loadBarbers error', e);
+      barberSel.innerHTML = '<option value="">-- choose master barber --</option>';
+      Object.keys(BARBER_DAYS).forEach(b => {
+        const opt = document.createElement('option'); opt.value=b; opt.textContent=b; barberSel.appendChild(opt);
+      });
+      updateBarbersForDate(dateInp.value);
+    }
+  }
+
+  function updateBarbersForDate(dateStr){
+    if(!dateStr) return;
+    const day = new Date(dateStr).getDay();
+    Array.from(barberSel.options).forEach(opt=>{
+      if(!opt.value) return;
+      const sched = BARBER_DAYS[opt.value];
+      // if barbers table exists and has custom days you'd load them; currently use BARBER_DAYS map
+      if(Array.isArray(sched) && !sched.includes(day)){
+        opt.disabled = true;
+        opt.classList.add('disabled');
+      } else {
+        opt.disabled = false;
+        opt.classList.remove('disabled');
+      }
+    });
+  }
+
+  function genSlots(openHour, closeHour, durMin){
+    const out=[];
+    for(let h=openHour; h<closeHour; h++){
+      for(let m=0; m<60; m+=durMin){
+        const mm = String(m).padStart(2,'0');
+        out.push(`${String(h).padStart(2,'0')}:${mm}`);
+      }
     }
     return out;
   }
 
-  async function fetchBooked(date, barber){
-    // returns array of times (HH:MM)
-    const res = await supabase
-      .from('bookings')
-      .select('booking_time')
-      .eq('booking_date', date)
-      .eq('barber', barber);
-
-    if (res.error) {
-      console.error('fetchBooked error', res.error);
+  // fetch booked slots from supabase for date+barber
+  async function getBookedSlots(date, barber){
+    try{
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('booking_time')
+        .eq('booking_date', date)
+        .eq('barber', barber);
+      if(error) { console.warn('getBookedSlots error', error); return []; }
+      return (data || []).map(r => typeof r === 'string' ? r : r.booking_time);
+    }catch(e){
+      console.error('getBookedSlots exception', e);
       return [];
-    }
-    return res.data.map(r => (r.booking_time instanceof String) ? r.booking_time : formatTimeFromSql(r.booking_time));
-  }
-
-  // Postgres time tends to come back like "11:20:00", we convert to "HH:MM"
-  function formatTimeFromSql(t){
-    if (!t) return t;
-    const s = t.toString();
-    return s.slice(0,5);
-  }
-
-  async function updateBarbersForDate(dateStr){
-    if (!dateStr) return;
-    // enable/disable barber options depending on their working_days array
-    try {
-      const d = new Date(dateStr);
-      const day = d.getDay();
-      const res = await supabase.from('barbers').select('name, working_days');
-      if (res.error) throw res.error;
-      const map = {};
-      res.data.forEach(b => map[b.name] = b.working_days || []);
-      Array.from(barberSel.options).forEach(opt => {
-        if (!opt.value) return;
-        const wk = map[opt.value];
-        if (!Array.isArray(wk) || !wk.includes(day)) {
-          opt.disabled = true; opt.classList.add('disabled');
-        } else {
-          opt.disabled = false; opt.classList.remove('disabled');
-        }
-      });
-    } catch (err) {
-      console.error('updateBarbersForDate error', err);
     }
   }
 
@@ -217,44 +256,31 @@
     const svcVal = serviceSel.value;
     const dateVal = dateInp.value;
     const barberVal = barberSel.value;
-    if (!svcVal || !dateVal || !barberVal){
-      slotsDiv.innerHTML = `<div class="muted">Select service, date and master barber to load slots</div>`;
+    if(!svcVal || !dateVal || !barberVal){
+      slotsDiv.innerHTML = `<div class="muted" style="color:#999">Select service, date and master barber to see available times</div>`;
       return;
     }
+
     let svc;
     try { svc = JSON.parse(svcVal); } catch(e){ svc = null; }
-    if (!svc || !svc.dur) { showMessage('Invalid service selected','error'); return; }
+    if(!svc || !svc.dur) { showMessage('Invalid service selected','error'); return; }
 
-    // business hours per day
     const day = new Date(dateVal).getDay();
-    const [open, close] = businessHours(day);
-    const allSlots = genSlots(open, close, svc.dur);
+    const hours = shopHoursForDay(day);
+    const allSlots = genSlots(hours.open, hours.close, svc.dur);
 
-    // get booked slots
-    let booked = [];
-    try {
-      const got = await supabase
-        .from('bookings')
-        .select('booking_time')
-        .eq('booking_date', dateVal)
-        .eq('barber', barberVal);
+    // fetch booked times
+    const booked = await getBookedSlots(dateVal, barberVal);
 
-      if (got.error) throw got.error;
-      booked = got.data.map(r => formatTimeFromSql(r.booking_time));
-    } catch (err) {
-      console.error('renderSlots fetch error', err);
-      showMessage('Unable to load booked slots from server (see console).', 'error', 6000);
-    }
-
-    allSlots.forEach(t => {
+    allSlots.forEach(t=>{
       const d = document.createElement('div');
       d.className = 'slot';
       d.textContent = t;
-      if (booked.includes(t)) {
+      if(booked.includes(t)) {
         d.classList.add('disabled');
       } else {
         d.addEventListener('click', ()=> {
-          document.querySelectorAll('.slot.selected').forEach(s => s.classList.remove('selected'));
+          document.querySelectorAll('.slot.selected').forEach(s=>s.classList.remove('selected'));
           d.classList.add('selected');
           timeInp.value = t;
         });
@@ -262,99 +288,112 @@
       slotsDiv.appendChild(d);
     });
 
-    if (allSlots.length === 0){
-      slotsDiv.innerHTML = `<div style="color:#999">No slots available</div>`;
-    }
+    if(allSlots.length === 0) slotsDiv.innerHTML = `<div style="color:#999">No slots available</div>`;
   }
 
+  // Create booking with last-moment check to avoid race conditions
   async function createBooking(payload){
-    try {
-      const res = await supabase.from('bookings').insert([{
+    try{
+      // re-check availability
+      const { data: clash, error: checkErr } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('booking_date', payload.date)
+        .eq('booking_time', payload.time)
+        .eq('barber', payload.barber)
+        .limit(1);
+
+      if(checkErr){
+        console.warn('availability check error', checkErr);
+        return { success:false, error: 'Server error checking availability' };
+      }
+      if(Array.isArray(clash) && clash.length > 0){
+        return { success:false, error: 'This time slot was just taken. Please choose another.' };
+      }
+
+      // insert
+      const row = {
         customer_name: payload.name,
         customer_email: payload.email,
         customer_phone: payload.phone,
         barber: payload.barber,
         service: payload.service,
         booking_date: payload.date,
-        booking_time: payload.time + ':00', // add seconds for PG time format
-        price: payload.price,
-        notes: payload.notes
-      }]);
-      if (res.error) {
-        console.error('Booking error', res.error);
-        return { success: false, error: res.error.message || JSON.stringify(res.error) };
+        booking_time: payload.time,
+        price: payload.price || null,
+        notes: payload.notes || null,
+        status: 'confirmed'
+      };
+      const { data, error } = await supabase.from('bookings').insert([row]);
+
+      if(error){
+        console.error('Booking insert error', error);
+        return { success:false, error: 'Failed to save booking. See console.' };
       }
-      return { success: true, booking: res.data[0] };
-    } catch (err) {
-      console.error('createBooking catch', err);
-      return { success: false, error: err.message || String(err) };
+      return { success:true, booking: data && data[0] ? data[0] : null };
+    }catch(e){
+      console.error('createBooking exception', e);
+      return { success:false, error:'Unexpected server error' };
     }
   }
 
-  // UI events
-  function attachEvents(){
-    dateInp.addEventListener('change', async () => {
-      await updateBarbersForDate(dateInp.value);
-      renderSlots();
-    });
-    barberSel.addEventListener('change', renderSlots);
-    serviceSel.addEventListener('change', renderSlots);
+  // ---------- Events ----------
+  dateInp.addEventListener('change', ()=>{ updateBarbersForDate(dateInp.value); renderSlots(); });
+  barberSel.addEventListener('change', renderSlots);
+  serviceSel.addEventListener('change', renderSlots);
 
-    form.addEventListener('submit', async (ev) => {
-      ev.preventDefault();
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const phone = form.phone.value.trim();
-      const svc = serviceSel.value ? JSON.parse(serviceSel.value) : null;
-      const date = dateInp.value;
-      const barber = barberSel.value;
-      const time = timeInp.value;
-      const notes = notesInp.value.trim();
+  form.addEventListener('submit', async ev=>{
+    ev.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const svc = serviceSel.value ? JSON.parse(serviceSel.value) : null;
+    const date = dateInp.value;
+    const barber = barberSel.value;
+    const time = timeInp.value;
+    const notes = notesInp.value.trim();
 
-      if (!name || !email || !phone || !svc || !date || !barber || !time) {
-        showMessage('Please fill all required fields and pick a time slot', 'error');
-        return;
-      }
+    if(!name || !email || !phone || !svc || !date || !barber || !time){
+      showMessage('Please fill all required fields and pick a time slot','error');
+      return;
+    }
 
-      submitBtn.disabled = true; loadingEl.classList.add('active'); msgDiv.className = 'message';
+    submitBtn.disabled = true;
+    loadingEl.classList.add('active');
 
-      try {
-        const payload = { action:'createBooking', name, email, phone, service: svc.name, price: svc.price, date, time, barber, notes };
-        const result = await createBooking(payload);
+    const payload = {
+      action: 'createBooking',
+      name, email, phone,
+      service: svc.name, price: svc.price,
+      date, time, barber, notes
+    };
 
-        if (result && result.success) {
-          showMessage('Booking confirmed! Check your email.', 'success', 7000);
-          form.reset();
-          slotsDiv.innerHTML = '';
-        } else {
-          // Attempt to make the error message friendlier: unique constraint violation = duplicate
-          let errText = result && result.error ? result.error : 'Booking failed. Server returned an error.';
-          if (typeof errText === 'string' && errText.toLowerCase().includes('duplicate') || (result.error && result.error.toString().includes('duplicate'))) {
-            errText = 'That time is already booked. Please choose another slot.';
-          }
-          showMessage(errText, 'error', 8000);
-        }
-      } catch (err) {
-        console.error('submit catch', err);
-        showMessage('Server error. Please check the browser console and paste the error here for help.', 'error', 10000);
-      } finally {
-        submitBtn.disabled = false; loadingEl.classList.remove('active');
-      }
-    });
+    const result = await createBooking(payload);
+    if(result.success){
+      showMessage('Booking confirmed! Check your email.','success',7000);
+      form.reset();
+      slotsDiv.innerHTML = '';
+    } else {
+      showMessage(result.error || 'Booking failed.','error',8000);
+    }
+
+    submitBtn.disabled = false;
+    loadingEl.classList.remove('active');
+  });
+
+  // ---------- Init ----------
+  function init(){
+    // set min date to today
+    dateInp.min = new Date().toISOString().split('T')[0];
+    loadServices();
+    loadBarbers();
   }
 
-  // init
-  (async function init(){
-    // set min date
-    dateInp.min = new Date().toISOString().split('T')[0];
-    await loadData();
-    await updateBarbersForDate(dateInp.value || dateInp.min);
-    attachEvents();
-    console.info('South Fade booking ready');
-  })();
+  init();
 
+  // Expose small debug
+  window._southFade = { supabase, renderSlots, getBookedSlots };
 })();
 </script>
 </body>
 </html>
-
