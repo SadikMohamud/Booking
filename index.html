@@ -21,260 +21,260 @@ input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid
 .slot:hover:not(.disabled){background:#2a2a2a;border-color:#ffd700;transform:translateY(-2px)}
 .slot.selected{background:#ffd700;color:#000;border-color:#ffd700;font-weight:700}
 .slot.disabled{background:#1a1a1a;color:#666;opacity:.6;cursor:not-allowed;text-decoration:line-through}
-.btn{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#ffd700,#d4af37);color:#000;font-weight:800;cursor:pointer;transition:all .3s}
+.btn{width:100%;padding:14px;border-radius:8px;border:none;background:linear-gradient(135deg,#ffd700,#d4af37);color:#000;font-weight:800;cursor:pointer}
 .btn:disabled{background:#444;color:#777;cursor:not-allowed}
-.loading{display:none;text-align:center;color:#ffd700;margin-top:10px}
-.loading.active{display:block}
-.muted{color:#999;font-size:.9rem}
 .gold-note{color:#FFD700;font-size:0.9rem;margin-top:10px;text-align:center}
+.muted{color:#999;font-size:.9rem;text-align:center}
 @media(max-width:640px){.flex{flex-direction:column}}
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1><i class="fas fa-cut"></i> South Fade Barbershop</h1>
-      <div class="muted">Book your appointment — fast & simple</div>
-    </div>
-
-    <div class="content">
-      <form id="bookingForm" autocomplete="off">
-        <label for="name">Full name *</label>
-        <input id="name" name="name" type="text" required placeholder="Alex Johnson">
-
-        <div class="flex">
-          <div class="col">
-            <label for="email">Email *</label>
-            <input id="email" name="email" type="email" required placeholder="you@example.com">
-          </div>
-          <div class="col">
-            <label for="phone">Phone *</label>
-            <input id="phone" name="phone" type="tel" required placeholder="+44 7...">
-          </div>
-        </div>
-
-        <label for="service">Service *</label>
-        <select id="service" required>
-          <option value="">-- choose a service --</option>
-        </select>
-
-        <div class="flex">
-          <div class="col">
-            <label for="date">Preferred date *</label>
-            <input id="date" type="date" required>
-          </div>
-          <div class="col">
-            <label for="barber">Choose Master Barber *</label>
-            <select id="barber" required>
-              <option value="">-- choose master barber --</option>
-            </select>
-          </div>
-        </div>
-
-        <label>Available time slots *</label>
-        <div id="slots" class="time-slots" aria-live="polite">
-          <div class="muted">Select service, date and master barber to load slots</div>
-        </div>
-        <input id="time" name="time" type="hidden" required>
-
-        <label for="notes">Notes (optional)</label>
-        <textarea id="notes" rows="3" placeholder="Anything we should know?"></textarea>
-
-        <p class="gold-note">At South Fade we kindly ask you to cancel your booking before rescheduling.</p>
-
-        <div style="margin-top:14px">
-          <button id="submitBtn" class="btn" type="submit"><i class="fas fa-calendar-check"></i> Book appointment</button>
-        </div>
-        <div id="loading" class="loading">Processing...</div>
-      </form>
-    </div>
+<div class="container">
+  <div class="header">
+    <h1><i class="fas fa-cut"></i> South Fade Barbershop</h1>
+    <div class="muted">Book your appointment — fast & simple</div>
   </div>
+
+  <div class="content">
+    <form id="bookingForm" autocomplete="off">
+      <label for="name">Full name *</label>
+      <input id="name" name="name" type="text" required placeholder="Alex Johnson">
+
+      <div class="flex">
+        <div class="col">
+          <label for="email">Email *</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+        </div>
+        <div class="col">
+          <label for="phone">Phone *</label>
+          <input id="phone" name="phone" type="tel" required placeholder="+44 7...">
+        </div>
+      </div>
+
+      <label for="service">Service *</label>
+      <select id="service" required></select>
+
+      <div class="flex">
+        <div class="col">
+          <label for="date">Preferred date *</label>
+          <input id="date" type="date" required>
+        </div>
+        <div class="col">
+          <label for="barber">Choose Master Barber *</label>
+          <select id="barber" required>
+            <option value="">-- choose master barber --</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Available time slots *</label>
+      <div id="slots" class="time-slots"><div class="muted">Select service, date and barber</div></div>
+      <input id="time" name="time" type="hidden" required>
+
+      <label for="notes">Notes (optional)</label>
+      <textarea id="notes" rows="3" placeholder="Anything we should know?"></textarea>
+
+      <p class="gold-note">At South Fade we kindly ask you to cancel your booking before rescheduling.</p>
+
+      <button id="submitBtn" class="btn" type="submit"><i class="fas fa-calendar-check"></i> Book appointment</button>
+    </form>
+  </div>
+</div>
 
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const SUPABASE_URL = 'https://ufcfbggsjemgzcmdhpts.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmY2ZiZ2dzamVtZ3pjbWRocHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNjMzNjYsImV4cCI6MjA3NTkzOTM2Nn0.IWB96tPDcVcCp36azPNLewik41xL3FrDjLLtIMqwT-4';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ---------- CONFIG ---------- */
+const SUPABASE_URL='https://ufcfbggsjemgzcmdhpts.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmY2ZiZ2dzamVtZ3pjbWRocHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNjMzNjYsImV4cCI6MjA3NTkzOTM2Nn0.IWB96tPDcVcCp36azPNLewik41xL3FrDjLLtIMqwT-4';
+const EMAIL_WEBHOOK='https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec';
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhZNRIOPimun3NF-9ZTiSF7QHNISm1dczpIEHx6rg2eyElL7FKBLd1mxOHQ34exVM/exec";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-// --- Services ---
-const services = [
+/* ---------- BARBERS & SCHEDULES ---------- */
+const BARBERS=['Alex','Moh','Yass','Ali'];
+const BARBER_SCHEDULE={
+  'Alex':[0,1,2,3,4,5,6],
+  'Moh':[1,2],
+  'Yass':[3,4,5,6],
+  'Ali':[5,6,0]
+};
+
+/* ---------- SERVICES (hardcoded) ---------- */
+const servicesData=[
   {cat:'Classic/Fade',items:[
-    {name:'Buzz cut Fade',price:24,dur:40},
-    {name:'Wash & cut',price:25,dur:40},
-    {name:'Skin Fade',price:27,dur:40},
-    {name:'Student',price:23,dur:40},
-    {name:'Student Skin fade',price:25,dur:40}
+    {name:'Buzz cut Fade',price:24},
+    {name:'Wash & cut',price:25},
+    {name:'Skin Fade',price:27},
+    {name:'Student',price:23},
+    {name:'Student Skin fade',price:25}
   ]},
   {cat:'Scissor Cut',items:[
-    {name:'Scissor Cut',price:27,dur:40},
-    {name:'Restyle',price:30,dur:40},
-    {name:'Complimentary wash with every haircut',price:0,dur:0}
+    {name:'Scissor Cut',price:27},
+    {name:'Restyle',price:30},
+    {name:'Complimentary wash with every haircut',price:0}
   ]},
   {cat:'Beard Trim',items:[
-    {name:'Beard Trim clipper',price:17,dur:40},
-    {name:'Beard trim Shape up & hot Towel',price:20,dur:40},
-    {name:'Hot Towel Shave',price:25,dur:40},
-    {name:'Complimentary wash with every haircut',price:0,dur:0}
+    {name:'Beard Trim clipper',price:17},
+    {name:'Beard trim Shape up & hot Towel',price:20},
+    {name:'Hot Towel Shave',price:25},
+    {name:'Complimentary wash with every haircut',price:0}
   ]},
   {cat:'Special Treatment',items:[
-    {name:'Nose & Ear waxing',price:10,dur:40},
-    {name:'Threading',price:10,dur:40},
-    {name:'Facial',price:20,dur:40},
-    {name:'Face mask',price:10,dur:40}
+    {name:'Nose & Ear waxing',price:10},
+    {name:'Threading',price:10},
+    {name:'Facial',price:20},
+    {name:'Face mask',price:10}
   ]},
   {cat:'Kids Cut',items:[
-    {name:'Boys Cut',price:20,dur:40},
-    {name:'Girls Cut',price:25,dur:40},
-    {name:'Complimentary wash with every haircut',price:0,dur:0}
+    {name:'Boys Cut',price:20},
+    {name:'Girls Cut',price:25},
+    {name:'Complimentary wash with every haircut',price:0}
   ]},
   {cat:'O.A.P Haircut',items:[
-    {name:'O.A.P Haircut',price:22,dur:40},
-    {name:'Complimentary wash with every haircut',price:0,dur:0}
+    {name:'O.A.P Haircut',price:22},
+    {name:'Complimentary wash with every haircut',price:0}
   ]}
 ];
 
-// --- Barbers ---
-const DEFAULT_BARBER_SCHEDULE = {
-  Moh:[1,2],        // Mon–Tue
-  Alex:[0,1,2,3,4,5,6], // All week
-  Yass:[3,4,5,6],   // Wed–Sat
-  Ali:[5,6,0]       // Fri–Sun
-};
-
-// --- DOM ---
-const form=document.getElementById('bookingForm');
-const serviceSel=document.getElementById('service');
-const dateInp=document.getElementById('date');
+/* ---------- POPULATE BARBERS ---------- */
 const barberSel=document.getElementById('barber');
-const slotsDiv=document.getElementById('slots');
-const timeInp=document.getElementById('time');
-const notesInp=document.getElementById('notes');
-const submitBtn=document.getElementById('submitBtn');
+BARBERS.forEach(b=>{
+  const opt=document.createElement('option');
+  opt.value=b;opt.textContent=b;
+  barberSel.appendChild(opt);
+});
 
-// --- Helpers ---
-function populateServices(){
-  services.forEach(g=>{
-    const og=document.createElement('optgroup');og.label=g.cat;
-    g.items.forEach(i=>{
-      const o=document.createElement('option');
-      o.value=JSON.stringify(i);
-      o.textContent=`${i.name} — £${i.price}`;
-      og.appendChild(o);
-    });
-    serviceSel.appendChild(og);
-  });
-}
-
-function populateBarbers(){
-  ['Moh','Alex','Yass','Ali'].forEach(n=>{
+/* ---------- POPULATE SERVICES ---------- */
+const serviceSel=document.getElementById('service');
+servicesData.forEach(cat=>{
+  const og=document.createElement('optgroup');
+  og.label=cat.cat;
+  cat.items.forEach(s=>{
     const o=document.createElement('option');
-    o.value=n;o.textContent=n;
-    barberSel.appendChild(o);
+    o.value=JSON.stringify(s);
+    o.textContent=`${s.name} — £${s.price}`;
+    og.appendChild(o);
   });
-}
+  serviceSel.appendChild(og);
+});
 
-function updateBarbersForDate(dateStr){
-  if(!dateStr)return;
-  const day=new Date(dateStr).getDay();
-  Array.from(barberSel.options).forEach(opt=>{
-    if(!opt.value)return;
-    const works=DEFAULT_BARBER_SCHEDULE[opt.value]?.includes(day);
-    opt.disabled=!works;
-    opt.style.opacity=works?1:0.4;
-  });
-}
+/* ---------- DATE SETUP ---------- */
+const dateInp=document.getElementById('date');
+dateInp.min=new Date().toISOString().split('T')[0];
 
-// --- Generate 40-minute slots ---
-function genSlots(open,close){
+/* ---------- GENERATE 40-MINUTE SLOTS ---------- */
+function generateSlots(){
   const slots=[];
-  let start=open*60;
-  const end=close*60;
-  while(start<end){
-    const h=Math.floor(start/60);
-    const m=start%60;
-    slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
-    start+=40; // jump by 40 minutes
+  let h=9,m=0;
+  while(h<20){
+    const t=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    slots.push(t);
+    m+=40;
+    if(m>=60){m-=60;h++;}
   }
   return slots;
 }
 
-async function getBookedSlots(date,barber){
-  try{
-    const {data,error}=await sb.from('bookings')
-      .select('booking_time')
-      .eq('booking_date',date)
-      .eq('barber',barber)
-      .eq('status','confirmed');
-    if(error)throw error;
-    return data.map(r=>r.booking_time);
-  }catch(e){console.error(e);return[];}
+/* ---------- GREY OUT BARBERS ---------- */
+function updateBarbers(){
+  const date=dateInp.value;if(!date)return;
+  const dow=new Date(date).getDay();
+  Array.from(barberSel.options).forEach(o=>{
+    if(!o.value)return;
+    const works=BARBER_SCHEDULE[o.value]?.includes(dow);
+    o.disabled=!works;
+    o.style.opacity=works?1:0.4;
+  });
 }
 
+/* ---------- RENDER TIME SLOTS ---------- */
 async function renderSlots(){
-  timeInp.value='';slotsDiv.innerHTML='';
-  const svcVal=serviceSel.value,dateVal=dateInp.value,barberVal=barberSel.value;
-  if(!svcVal||!dateVal||!barberVal){
-    slotsDiv.innerHTML='<div class="muted">Select service, date and master barber</div>';return;
-  }
-  const day=new Date(dateVal).getDay();
-  const [o,c]=(day===0)?[9,18]:(day===6)?[9,19]:[9,20];
-  const all=genSlots(o,c);
-  const booked=await getBookedSlots(dateVal,barberVal);
+  const date=dateInp.value,barber=barberSel.value,svc=serviceSel.value;
+  const slotsDiv=document.getElementById('slots');
+  slotsDiv.innerHTML='';
+  if(!date||!barber||!svc){slotsDiv.innerHTML='<div class="muted">Select service, date and barber</div>';return;}
+
+  const dow=new Date(date).getDay();
+  const works=BARBER_SCHEDULE[barber]?.includes(dow);
+  if(!works){slotsDiv.innerHTML='<div class="muted">This barber does not work on that day.</div>';return;}
+
+  const all=generateSlots();
+  const {data:booked}=await sb.from('bookings').select('booking_time').eq('booking_date',date).eq('barber',barber).eq('status','confirmed');
+  const taken=booked?booked.map(b=>b.booking_time):[];
   all.forEach(t=>{
-    const d=document.createElement('div');d.className='slot';d.textContent=t;
-    if(booked.includes(t))d.classList.add('disabled');
-    else d.onclick=()=>{document.querySelectorAll('.slot.selected').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');timeInp.value=t;};
+    const d=document.createElement('div');d.textContent=t;d.className='slot';
+    if(taken.includes(t)){d.classList.add('disabled');}
+    else{
+      d.onclick=()=>{
+        document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
+        d.classList.add('selected');
+        document.getElementById('time').value=t;
+      };
+    }
     slotsDiv.appendChild(d);
   });
 }
 
-async function createBooking(p){
-  try{
-    const {data:exists}=await sb.from('bookings')
-      .select('id').eq('booking_date',p.date).eq('booking_time',p.time).eq('barber',p.barber).eq('status','confirmed').limit(1);
-    if(exists&&exists.length)return{success:false,error:'Slot unavailable'};
-    const {error}=await sb.from('bookings').insert([{
-      customer_name:p.name,customer_email:p.email,customer_phone:p.phone,
-      service:p.service,price:p.price,barber:p.barber,
-      booking_date:p.date,booking_time:p.time,notes:p.notes,
-      status:'confirmed',created_at:new Date().toISOString()
-    }]);
-    if(error)throw error;
-    fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(p)});
-    return{success:true};
-  }catch(e){console.error(e);return{success:false,error:'Server error'};}
-}
-
-form.addEventListener('submit',async e=>{
+/* ---------- FORM SUBMIT ---------- */
+document.getElementById('bookingForm').addEventListener('submit',async e=>{
   e.preventDefault();
   const svc=serviceSel.value?JSON.parse(serviceSel.value):null;
   const payload={
-    name:form.name.value,email:form.email.value,phone:form.phone.value,
-    service:svc?.name,price:svc?.price,date:dateInp.value,
-    time:timeInp.value,barber:barberSel.value,notes:notesInp.value
+    customer_name:document.getElementById('name').value.trim(),
+    customer_email:document.getElementById('email').value.trim(),
+    customer_phone:document.getElementById('phone').value.trim(),
+    barber:barberSel.value,
+    service:svc?.name,
+    price:svc?.price,
+    booking_date:dateInp.value,
+    booking_time:document.getElementById('time').value,
+    notes:document.getElementById('notes').value||'',
+    status:'confirmed'
   };
-  if(!payload.name||!payload.email||!payload.phone||!payload.service||!payload.date||!payload.time||!payload.barber){
-    submitBtn.textContent='Fill all fields';setTimeout(()=>submitBtn.innerHTML='<i class="fas fa-calendar-check"></i> Book appointment',3000);return;
+  const btn=document.getElementById('submitBtn');
+
+  if(!payload.customer_name||!payload.customer_email||!payload.customer_phone||!payload.barber||!payload.service||!payload.booking_date||!payload.booking_time){
+    btn.textContent='Fill all fields';
+    setTimeout(()=>btn.innerHTML='<i class="fas fa-calendar-check"></i> Book appointment',3000);
+    return;
   }
-  submitBtn.disabled=true;submitBtn.textContent='Booking...';
-  const res=await createBooking(payload);
-  if(res.success){submitBtn.textContent='Booking Confirmed ✓';form.reset();slotsDiv.innerHTML='';}
-  else submitBtn.textContent=res.error||'Slot unavailable';
-  setTimeout(()=>{submitBtn.disabled=false;submitBtn.innerHTML='<i class="fas fa-calendar-check"></i> Book appointment';},3000);
+
+  btn.disabled=true;btn.textContent='Booking...';
+
+  // Check for double booking
+  const {data:clash}=await sb.from('bookings').select('id').eq('booking_date',payload.booking_date).eq('booking_time',payload.booking_time).eq('barber',payload.barber).eq('status','confirmed');
+  if(clash&&clash.length){
+    btn.textContent='Slot Unavailable';
+    setTimeout(()=>btn.innerHTML='<i class="fas fa-calendar-check"></i> Book appointment',3000);
+    btn.disabled=false;return;
+  }
+
+  // Save booking to Supabase
+  const res=await sb.from('bookings').insert([payload]);
+  if(res.error){
+    console.error(res.error);
+    btn.textContent='Error — Try again';
+    btn.disabled=false;return;
+  }
+
+  // Send confirmation email
+  fetch(EMAIL_WEBHOOK,{
+    method:'POST',mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  });
+
+  btn.textContent='Booking Confirmed ✓';
+  e.target.reset();
+  document.getElementById('slots').innerHTML='<div class="muted">Booking completed</div>';
+  setTimeout(()=>{btn.disabled=false;btn.innerHTML='<i class="fas fa-calendar-check"></i> Book appointment';},3000);
 });
 
-dateInp.addEventListener('change',()=>{updateBarbersForDate(dateInp.value);renderSlots();});
+/* ---------- EVENTS ---------- */
+dateInp.addEventListener('change',()=>{updateBarbers();renderSlots();});
 barberSel.addEventListener('change',renderSlots);
 serviceSel.addEventListener('change',renderSlots);
-
-document.addEventListener('DOMContentLoaded',()=>{
-  populateServices();
-  populateBarbers();
-  dateInp.min=new Date().toISOString().split('T')[0];
-});
 </script>
 </body>
 </html>
